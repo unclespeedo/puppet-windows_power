@@ -66,37 +66,32 @@ define windows_power::schemes::scheme(
   $scheme_check = "${windows_power::params::nasty_ps} \$items.contains(${scheme_name})"
 
   if $ensure == 'present' {
-
-    case $::operatingsystemversion {
-      'Windows XP', 'Windows Server 2003', 'Windows Server 2003 R2': {
-        exec { "create power scheme ${scheme_name}":
-          command   => "& ${windows_power::params::powercfg} /create ${scheme_name}",
-          provider  => powershell,
-          logoutput => true,
-          onlyif    => $scheme_check,
+    case $::operatingsystem {
+      windows: {
+        case '10' {
+          exec { "create power scheme ${scheme_name}":
+            command   => "& ${windows_power::params::powercfg} /DUPLICATESCHEME ${template_scheme} ${scheme_guid}",
+            provider  => powershell,
+            logoutput => true,
+            onlyif    => $scheme_check,
+          }
+          exec { "rename scheme to ${scheme_name}":
+            command   => "& ${windows_power::params::powercfg} /CHANGENAME ${scheme_guid} ${scheme_name}",
+            provider  => powershell,
+            logoutput => true,
+            onlyif    => $scheme_check,
+            require   => Exec["create power scheme ${scheme_name}"],
+          }
         }
       }
       default: {
-        exec { "create power scheme ${scheme_name}":
-          command   => "& ${windows_power::params::powercfg} -duplicatescheme ${template_scheme} ${scheme_guid}",
-          provider  => powershell,
-          logoutput => true,
-          onlyif    => $scheme_check,
-        }
-
-        exec { "rename scheme to ${scheme_name}":
-          command   => "& ${windows_power::params::powercfg} -changename ${scheme_guid} ${scheme_name}",
-          provider  => powershell,
-          logoutput => true,
-          onlyif    => $scheme_check,
-          require   => Exec["create power scheme ${scheme_name}"],
-        }
+        notice ("${operatingsystem} Operating system not supported by this module")
       }
     }
   }
   elsif $ensure == 'absent' {
     exec { "delete power scheme ${scheme_name}":
-      command   => "& ${windows_power::params::powercfg} -delete ${scheme_guid}",
+      command   => "& ${windows_power::params::powercfg} /DELETE ${scheme_guid}",
       provider  => powershell,
       logoutput => true,
       unless    => $scheme_check,
@@ -105,7 +100,7 @@ define windows_power::schemes::scheme(
 
   if $activation == 'active' {
     exec { "set ${scheme_name} scheme as active":
-      command   => "& ${windows_power::params::powercfg} -setactive ${scheme_guid}",
+      command   => "& ${windows_power::params::powercfg} /SETACTIVE ${scheme_guid}",
       provider  => powershell,
       logoutput => true,
       unless    => $scheme_check,
