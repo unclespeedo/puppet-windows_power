@@ -89,7 +89,6 @@ define windows_power::schemes::scheme(
           provider  => powershell,
           logoutput => true,
           onlyif    => $scheme_check,
-          require   => Exec["rename scheme to ${scheme_name}"],
         }
       }
     }
