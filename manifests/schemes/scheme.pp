@@ -68,8 +68,7 @@ define windows_power::schemes::scheme(
   if $ensure == 'present' {
     case $::operatingsystem {
       windows: {
-        case $::operatingsystemrelease {
-          10: {
+        if $facts['operatingsystemrelease'] == 10 {
             exec { "create power scheme ${scheme_name}":
               command   => "& ${windows_power::params::powercfg} /DUPLICATESCHEME ${template_scheme} ${scheme_guid}",
               provider  => powershell,
@@ -84,7 +83,7 @@ define windows_power::schemes::scheme(
               require   => Exec["create power scheme ${scheme_name}"],
             }
           }
-          default: {
+          else: {
             notice ("Version ${operatingsystemrelease} of ${operatingsystemrelease} not supported")
           }
         }
@@ -109,6 +108,7 @@ define windows_power::schemes::scheme(
       provider  => powershell,
       logoutput => true,
       unless    => $scheme_check,
+      require   => Exec["create power scheme ${scheme_name}"],
     }
   }
 }
