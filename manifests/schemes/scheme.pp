@@ -69,23 +69,22 @@ define windows_power::schemes::scheme(
     case $::operatingsystem {
       windows: {
         if $facts['operatingsystemrelease'] == 10 {
-            exec { "create power scheme ${scheme_name}":
-              command   => "& ${windows_power::params::powercfg} /DUPLICATESCHEME ${template_scheme} ${scheme_guid}",
-              provider  => powershell,
-              logoutput => true,
-              onlyif    => $scheme_check,
-            }
-            exec { "rename scheme to ${scheme_name}":
-              command   => "& ${windows_power::params::powercfg} /CHANGENAME ${scheme_guid} ${scheme_name}",
-              provider  => powershell,
-              logoutput => true,
-              onlyif    => $scheme_check,
-              require   => Exec["create power scheme ${scheme_name}"],
-            }
+          exec { "create power scheme ${scheme_name}":
+            command   => "& ${windows_power::params::powercfg} /DUPLICATESCHEME ${template_scheme} ${scheme_guid}",
+            provider  => powershell,
+            logoutput => true,
+            onlyif    => $scheme_check,
           }
-          else: {
-            notice ("Version ${operatingsystemrelease} of ${operatingsystemrelease} not supported")
+          exec { "rename scheme to ${scheme_name}":
+            command   => "& ${windows_power::params::powercfg} /CHANGENAME ${scheme_guid} ${scheme_name}",
+            provider  => powershell,
+            logoutput => true,
+            onlyif    => $scheme_check,
+            require   => Exec["create power scheme ${scheme_name}"],
           }
+        }
+        else {
+          notice ("Version ${operatingsystemrelease} of ${operatingsystemrelease} not supported")
         }
       }
       default: {
