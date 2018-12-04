@@ -68,7 +68,9 @@ define windows_power::schemes::scheme(
   if $ensure == 'present' {
     case $::operatingsystem {
       windows: {
+        notice ("Made it into case statement with operatingsystem: ${operatingsystem}")
         if $facts['operatingsystemrelease'] == 10 {
+          notice ("Made it into if statement with facts::operatingsystemrelease: ${operatingsystemrelease}")
           exec { "create power scheme ${scheme_name}":
             command   => "& ${windows_power::params::powercfg} /DUPLICATESCHEME ${template_scheme} ${scheme_guid}",
             provider  => powershell,
