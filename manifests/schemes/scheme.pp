@@ -66,10 +66,10 @@ define windows_power::schemes::scheme(
   $scheme_check = "${windows_power::params::nasty_ps} \$items.contains(\"${scheme_name}\")"
 
   if $ensure == 'present' {
-    case $::operatingsystem {
-      windows: {
+#    case $::operatingsystem {
+#      windows: {
         notice ("Made it into case statement with operatingsystem: ${operatingsystem}")
-        if $facts['operatingsystemrelease'] == 10 {
+#        if $facts['operatingsystemrelease'] == 10 {
           notice ("Made it into if statement with facts::operatingsystemrelease: ${operatingsystemrelease}")
           exec { "create power scheme ${scheme_name}":
             command   => "& ${windows_power::params::powercfg} /DUPLICATESCHEME ${template_scheme} ${scheme_guid}",
@@ -84,15 +84,15 @@ define windows_power::schemes::scheme(
             onlyif    => $scheme_check,
             require   => Exec["create power scheme ${scheme_name}"],
           }
-        }
-        else {
-          notice ("Version ${operatingsystemrelease} of ${operatingsystemrelease} not supported")
-        }
-      }
-      default: {
-        notice ("${operatingsystem} Operating system not supported by this module")
-      }
-    }
+#        }
+#        else {
+#          notice ("Version ${operatingsystemrelease} of ${operatingsystemrelease} not supported")
+#        }
+#      }
+#      default: {
+#        notice ("${operatingsystem} Operating system not supported by this module")
+#      }
+#    }
   }
   elsif $ensure == 'absent' {
     exec { "delete power scheme ${scheme_name}":
