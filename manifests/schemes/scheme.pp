@@ -99,7 +99,7 @@ define windows_power::schemes::scheme(
       command   => "& ${windows_power::params::powercfg} /DELETE ${scheme_guid}",
       provider  => powershell,
       logoutput => true,
-      unless    => $scheme_check,
+      onlyif    => $scheme_check,
     }
   }
 
@@ -108,7 +108,7 @@ define windows_power::schemes::scheme(
       command   => "& ${windows_power::params::powercfg} /SETACTIVE ${scheme_guid}",
       provider  => powershell,
       logoutput => true,
-      unless    => $scheme_check,
+      onlyif    => $scheme_check,
     }
   }
 }
