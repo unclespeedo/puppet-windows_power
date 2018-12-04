@@ -75,7 +75,7 @@ define windows_power::schemes::scheme(
             command   => "& ${windows_power::params::powercfg} /DUPLICATESCHEME ${template_scheme} ${scheme_guid}",
             provider  => powershell,
             logoutput => true,
-            unless    => $scheme_check,
+            unless    => "& ${windows_power::params::powercfg} /q ${scheme_guid}",
           }
           -> exec { "rename scheme to ${scheme_name}":
             command   => "& ${windows_power::params::powercfg} /CHANGENAME ${scheme_guid} ${scheme_name}",
