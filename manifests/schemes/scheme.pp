@@ -77,12 +77,11 @@ define windows_power::schemes::scheme(
             logoutput => true,
             unless    => $scheme_check,
           }
-          exec { "rename scheme to ${scheme_name}":
+          -> exec { "rename scheme to ${scheme_name}":
             command   => "& ${windows_power::params::powercfg} /CHANGENAME ${scheme_guid} ${scheme_name}",
             provider  => powershell,
             logoutput => true,
             onlyif    => $scheme_check,
-            require   => Exec["create power scheme ${scheme_name}"],
           }
 #        }
 #        else {
