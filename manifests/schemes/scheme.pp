@@ -63,7 +63,7 @@ define windows_power::schemes::scheme(
   }
 
   $template_guid = $windows_power::params::template_schemes[$template_scheme]
-  $scheme_check = "${windows_power::params::nasty_ps} \$items.contains('${scheme_name}')"
+  $scheme_check = "${windows_power::params::nasty_ps} \$items.contains(\"${scheme_name}\")"
 
   if $ensure == 'present' {
     case $::operatingsystem {
